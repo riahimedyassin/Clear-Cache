@@ -1,0 +1,14 @@
+{
+  "name": "clearcache-tool",
+  "version": "1.0.0",
+  "description": "CLI tool to clear the Computer Cache Files for better performance",
+  "main": "index.js",
+  "scripts": {
+    "clear-cache":"node index.js"
+  },
+  "bin": {
+    "clear-cache": "index.js"
+  },
+  "author": "Riahi Yassin",
+  "license": "ISC"
+}
