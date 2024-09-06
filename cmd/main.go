@@ -6,10 +6,15 @@ import (
 	"github.com/riahimedyassin/Clear-Cache/lib"
 )
 
+func init() {
+	lib.InitConfig()
+}
+
 func main() {
-	res, err := lib.GetConfig()
+	config, err := lib.GetConfig()
 	if err != nil {
-		fmt.Println("Cannot read config : %s", err.Error())
+		fmt.Println("Could not load config")
+		return
 	}
-	fmt.Println(*res)
+	fmt.Println(*config)
 }

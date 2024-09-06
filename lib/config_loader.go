@@ -2,6 +2,7 @@ package lib
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 )
@@ -11,7 +12,7 @@ type Config struct {
 	ROAMING string `json:"roaming"`
 }
 
-func GetConfig() (*map[string]interface{}, error) {
+func GetConfig() (*Config, error) {
 	file, err := os.OpenFile("./config.json", os.O_RDONLY, 0644)
 	if err != nil {
 		return nil, err
@@ -21,9 +22,23 @@ func GetConfig() (*map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := make(map[string]interface{})
+	res := Config{}
 	if err := json.Unmarshal(byteValue, &res); err != nil {
 		return nil, err
 	}
+	if err = ValidateConfig(res); err != nil {
+		return nil, err
+	}
 	return &res, nil
+}
+
+func ValidateConfig(config Config) error {
+	if config.ROAMING == "" || config.CACHE == "" {
+		return errors.New("invalid config")
+	}
+	return nil
+}
+
+func InitConfig() {
+
 }
