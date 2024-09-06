@@ -12,33 +12,38 @@ type Config struct {
 	ROAMING string `json:"roaming"`
 }
 
-func GetConfig() (*Config, error) {
-	file, err := os.OpenFile("./config.json", os.O_RDONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	byteValue, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	res := Config{}
-	if err := json.Unmarshal(byteValue, &res); err != nil {
-		return nil, err
-	}
-	if err = ValidateConfig(res); err != nil {
-		return nil, err
-	}
-	return &res, nil
+type ConfigLoader struct {
+	Config Config
 }
 
-func ValidateConfig(config Config) error {
+func NewConfigLoader() *ConfigLoader {
+	return &ConfigLoader{}
+}
+
+func (c *ConfigLoader) validateConfig(config Config) error {
 	if config.ROAMING == "" || config.CACHE == "" {
 		return errors.New("invalid config")
 	}
 	return nil
 }
 
-func InitConfig() {
-
+func (c *ConfigLoader) InitConfig() error {
+	file, err := os.OpenFile("./config.json", os.O_RDONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+	res := Config{}
+	if err := json.Unmarshal(byteValue, &res); err != nil {
+		return err
+	}
+	if err = c.validateConfig(res); err != nil {
+		return err
+	}
+	c.Config = res
+	return nil
 }

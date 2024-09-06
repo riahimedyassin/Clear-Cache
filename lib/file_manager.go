@@ -5,9 +5,10 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
-func DeleteFile(path string, info fs.FileInfo, err error) error {
+func deleteFile(path string, info fs.FileInfo, err error) error {
 	if err != nil {
 		fmt.Println("Cannot load file")
 		return nil
@@ -24,8 +25,10 @@ func DeleteFile(path string, info fs.FileInfo, err error) error {
 	return nil
 }
 
-func DeleteDirectoryFiles(p string) {
-	err := filepath.Walk(p, DeleteFile)
+func DeleteDirectoryFiles(p string, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+	err := filepath.Walk(p, deleteFile)
 	if err != nil {
 		fmt.Printf("Could not open folder : %s", err.Error())
 	}

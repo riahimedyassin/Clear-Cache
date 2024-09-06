@@ -1,20 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"sync"
 
 	"github.com/riahimedyassin/Clear-Cache/lib"
 )
 
 func init() {
-	lib.InitConfig()
+
 }
 
 func main() {
-	config, err := lib.GetConfig()
-	if err != nil {
-		fmt.Println("Could not load config")
-		return
-	}
-	fmt.Println(*config)
+	c := lib.NewConfigLoader()
+	c.InitConfig()
+	wg := sync.WaitGroup{}
+	go lib.DeleteDirectoryFiles(c.Config.CACHE, &wg)
+	go lib.DeleteDirectoryFiles(c.Config.ROAMING, &wg)
 }
